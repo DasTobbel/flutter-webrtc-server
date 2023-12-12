@@ -52,5 +52,10 @@ func main() {
 	config.KeyFile = sslKey
 	config.HTMLRoot = htmlRoot
 
-	wsServer.Bind(config)
+	withSsl := cfg.Section("general").Key("ssl").MustBool(false)
+	if withSsl == true {
+		wsServer.BindSSL(config)
+        } else {
+		wsServer.Bind(config)
+	}
 }

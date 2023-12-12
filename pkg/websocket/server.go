@@ -66,13 +66,24 @@ func (server *WebSocketServer) handleTurnServerRequest(writer http.ResponseWrite
 	server.handleTurnServer(writer, request)
 }
 
-// Bind .
+// Bind Non SSL .
 func (server *WebSocketServer) Bind(cfg WebSocketServerConfig) {
 	// Websocket handle func
 	http.HandleFunc(cfg.WebSocketPath, server.handleWebSocketRequest)
 	http.HandleFunc(cfg.TurnServerPath, server.handleTurnServerRequest)
 	http.Handle("/", http.FileServer(http.Dir(cfg.HTMLRoot)))
 	logger.Infof("Flutter WebRTC Server listening on: %s:%d", cfg.Host, cfg.Port)
+	// http.ListenAndServe(cfg.Host+":"+strconv.Itoa(cfg.Port), nil)
+	panic(http.ListenAndServe(cfg.Host+":"+strconv.Itoa(cfg.Port), nil))
+}
+
+// BindSSL .
+func (server *WebSocketServer) BindSSL(cfg WebSocketServerConfig) {
+	// Websocket handle func
+	http.HandleFunc(cfg.WebSocketPath, server.handleWebSocketRequest)
+	http.HandleFunc(cfg.TurnServerPath, server.handleTurnServerRequest)
+	http.Handle("/", http.FileServer(http.Dir(cfg.HTMLRoot)))
+	logger.Infof("[SSL] Flutter WebRTC Server listening on: %s:%d", cfg.Host, cfg.Port)
 	// http.ListenAndServe(cfg.Host+":"+strconv.Itoa(cfg.Port), nil)
 	panic(http.ListenAndServeTLS(cfg.Host+":"+strconv.Itoa(cfg.Port), cfg.CertFile, cfg.KeyFile, nil))
 }
